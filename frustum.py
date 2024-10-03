@@ -62,10 +62,10 @@ def create_frustum(center_pos, h, r1, r2, sides=12):
 
     # Ensure outward normals for top and bottom
     frustum.fix_normals()
-    
-    # Smooth the normals for the side faces for a natural appearance
-    frustum.face_normals = trimesh.util.unitize(frustum.face_normals)
-    
+
+    # Smooth the vertex normals to make the frustum appear smoother
+    trimesh.smoothing.filter_humphrey(frustum)
+
     return frustum
 
 
@@ -112,5 +112,5 @@ frustum_mesh = create_frustum(center_pos, h, r1, r2)
 # Apply a 60-degree rotation to get a better bottom view
 frustum_mesh = rotate_frustum(frustum_mesh, axis='x', angle_deg=60)
 
-# Visualize the frustum in trimesh
+# Visualize the frustum in trimesh with smoothed normals
 frustum_mesh.show()
