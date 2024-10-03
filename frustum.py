@@ -4,6 +4,7 @@ import trimesh
 def create_frustum(center_pos, h, r1, r2, sides=12):
     """
     Creates a frustum using trimesh with smooth side faces and outward-pointing normals.
+    The shape remains intact while smoothing only the normals for a rounder visual appearance.
 
     Parameters:
     - center_pos: Tuple[float, float, float] -> The center position of the top face.
@@ -13,7 +14,7 @@ def create_frustum(center_pos, h, r1, r2, sides=12):
     - sides: int -> The number of sides for the regular polygon (default: 12).
     
     Returns:
-    - trimesh.Trimesh object representing the frustum.
+    - trimesh.Trimesh object representing the frustum with smooth normals.
     """
     
     # Decompose center position
@@ -60,12 +61,10 @@ def create_frustum(center_pos, h, r1, r2, sides=12):
     # Create the mesh
     frustum = trimesh.Trimesh(vertices=vertices, faces=faces)
 
-    # Ensure outward normals for top and bottom
-    frustum.fix_normals()
+    # Recompute vertex normals for smooth shading
+    frustum.vertex_normals = trimesh.smoothing.filter_taubin(frustum, lamb=0.5, iterations=10).vertex_normals
 
-    # Smooth the vertex normals to make the frustum appear smoother
-    trimesh.smoothing.filter_humphrey(frustum)
-
+    # Return the frustum with smooth normals
     return frustum
 
 
